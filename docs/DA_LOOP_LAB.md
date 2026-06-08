@@ -26,19 +26,26 @@ Live:
 https://main--da-loops-tests--somarc.aem.live/
 ```
 
-## Current Baseline
+## Hydrated Baseline
 
 The repo is connected to AEM Code Sync and codebus assets are reachable.
 
-Observed public baseline on June 7, 2026:
+Observed public baseline after fixture hydration on June 7, 2026:
 
 | Route | Preview | Live | Meaning |
 |---|---:|---:|---|
-| `/` | 404 | 404 | Expected until DA content source is seeded |
+| `/` | 200 | 200 | Root contentbus route reachable |
+| `/contentbus` | 200 | 200 | Explicit contentbus route reachable |
+| `/blocks` | 200 | 200 | Block contract route reachable |
+| `/hybrid` | 200 | 200 | Ownership edge-case route reachable |
+| `/nav` | 200 | 200 | Shared nav route reachable |
+| `/footer` | 200 | 200 | Shared footer route reachable |
+| `/missing` | 404 | 404 | Intentional orphan/missing route |
 | `/styles/styles.css` | 200 | Not checked | Codebus reachable |
 | `/blocks/hero/hero.css` | 200 | Not checked | Block asset reachable |
+| `/blocks/hero/hero.js` | 200 | Not checked | Block JS verification marker reachable |
 
-Local `da status` currently resolves the project target from `.da.json`, but DA auth may need refresh before Admin API reads or writes.
+Local `da status` resolves the project target from `.da.json`.
 
 ## Intended Route Matrix
 
@@ -128,7 +135,7 @@ Start with a small site-readiness loop:
 ```bash
 da status --format json
 da site model --format json
-da site freshness --fail-on stale,unknown --format json
+da site freshness --fail-on preview-stale,live-stale,preview-missing,source-missing,probe-failed,unknown --format json
 da audit contracts --prefix / --verify-code --format json
 da code verify /styles/styles.css --contains "body" --format json
 ```
